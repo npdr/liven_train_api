@@ -1,0 +1,12 @@
+{
+  "name": "liven_train_api",
+  "version": "1.0.0",
+  "description": "api de controle de usuarios",
+  "main": "index.js",
+  "repository": "https://github.com/npdr/liven_train_api",
+  "author": "npdr <p.nieuwenhoff@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
