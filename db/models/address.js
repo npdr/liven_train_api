@@ -13,8 +13,8 @@ class Address extends Model {
                 relation: Model.HasOneRelation,
                 modelClass: User,
                 join: {
-                    from: 'user.id',
-                    to: 'address.ownerId',
+                    from: 'address.ownerId',
+                    to: 'user.id',
                 }
             }
         }

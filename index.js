@@ -1,13 +1,17 @@
 const express = require('express');
+const dbSetup = require('./db/db-setup');
+const Address = require('./db/models/address');
+const routes = require('./routes');
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({extended: true}))
+app.use(routes);
+
+dbSetup();
+
 const PORT = process.env.PORT || 3000;
-
-app.get('/', (req,res) => {
-    res.send('<h1>Hello world</h1>');
-});
-
 app.listen(PORT, (req, res) => {
-    console.log(`Serve is online on port ${PORT}`);
+    console.log(`Server is online on port ${PORT}`);
 });
