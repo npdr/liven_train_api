@@ -1,6 +1,5 @@
 const express = require('express');
 const dbSetup = require('./db/db-setup');
-const Address = require('./db/models/address');
 const routes = require('./routes');
 
 const app = express();

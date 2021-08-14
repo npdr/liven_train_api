@@ -1,25 +1,34 @@
 const User = require('../db/models/user');
 const bcrypt = require('bcrypt');
 
-const {
-    transaction
-} = require('objection');
-
 class UserController {
     async getUserById(req, res) {
-        const user = await User.query()
-            .withGraphFetched('address')
-            .select('name', 'email')
-            .where('id', '=', req.params.id);
-        return res.json(user);
+        try {
+            const user = await User.query()
+                .withGraphFetched('address')
+                .select('name', 'email')
+                .findById(req.params.id);
+
+            if(!user) res.status(404).send({message: 'User not found'});
+            
+            return res.json(user);
+        } catch (err) {
+            res.send(400).send(err);
+        }
+
     }
 
     async getUserByName(req, res) {
-        const user = await User.query()
-            .select('name', 'email')
-            .withGraphFetched('address')
-            .where('name', '=', req.query.name)
-        return res.json(user);
+        try {
+            const user = await User.query()
+                .select('name', 'email')
+                .withGraphFetched('address')
+                .where('name', '=', req.query.name)
+            return res.status(200).json(user);
+        } catch (err) {
+            res.status(400).send(err);
+        }
+
     }
 
     async createUser(req, res) {
@@ -64,7 +73,7 @@ class UserController {
                 .where('id', '=', req.params.id);
 
             return res.status(201).send({
-                message: 'Updated successfully'
+                message: 'User updated successfully'
             });
         } catch (err) {
             res.status(400).send(err);
@@ -78,7 +87,7 @@ class UserController {
                 .where('id', '=', req.params.id)
 
             return res.status(201).send({
-                message: 'Deleted successfully'
+                message: 'User deleted successfully'
             });
         } catch (err) {
             res.status(400).send(err);
