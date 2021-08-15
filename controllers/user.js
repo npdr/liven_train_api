@@ -1,5 +1,9 @@
 const User = require('../db/models/user');
 const bcrypt = require('bcrypt');
+const {
+    userSchema,
+    updateUserSchema
+} = require('../utils/validation');
 
 class UserController {
     async getUserById(req, res) {
@@ -9,11 +13,13 @@ class UserController {
                 .select('name', 'email')
                 .findById(req.params.id);
 
-            if(!user) res.status(404).send({message: 'User not found'});
-            
-            return res.json(user);
+            if (!user) res.status(404).send({
+                message: 'User not found'
+            });
+
+            return res.status(200).json(user);
         } catch (err) {
-            res.send(400).send(err);
+            return res.send(400).send(err);
         }
 
     }
@@ -23,52 +29,88 @@ class UserController {
             const user = await User.query()
                 .select('name', 'email')
                 .withGraphFetched('address')
-                .where('name', '=', req.query.name)
+                .where('name', '=', req.query.name);
+
+            if (user.length == 0) return res.status(404).send({
+                message: 'No users were found'
+            });
+
             return res.status(200).json(user);
         } catch (err) {
-            res.status(400).send(err);
+            return res.status(400).send(err);
         }
 
     }
 
     async createUser(req, res) {
         try {
+            let user = req.body;
+
+            // validate input data
             const {
-                name,
-                email,
-                password
-            } = req.body;
+                error
+            } = userSchema.validate(user);
 
-            const hash = await bcrypt.hash(password, 10);
+            if (error) return res.status(400).send({
+                message: error.details[0].message
+            });
 
-            const user = await User.query()
-                .insert({
-                    name: name,
-                    email: email,
-                    password: hash,
-                });
+            // check if user exists
+            const userFound = await User.query()
+                .where('email', '=', user.email);
 
-            return res.status(201).send(user);
+            if (userFound.length > 0) return res.status(400).send({
+                message: 'User already exists'
+            });
+
+            // hash password, then insert user
+            const hash = await bcrypt.hash(user.password, 10);
+            user.password = hash;
+
+            await User.query()
+                .insert(user);
+
+            return res.status(201).send({
+                message: 'User succesfully created',
+                user: user
+            });
         } catch (err) {
-            res.status(400).send(err);
+            return res.status(400).send(err);
         }
     }
 
     async updateUser(req, res) {
         try {
-            const {
-                name,
-                email,
-                password
-            } = req.body;
+            let user = req.body;
 
-            const hash = await bcrypt.hash(password, 10);
+            // validate input data
+            const {
+                error
+            } = updateUserSchema.validate(user);
+
+            if (error) return res.status(400).send({
+                message: error.details[0].message
+            });
+
+            // check if user exists
+            const userFound = await User.query()
+                .where('id', '=', req.params.id);
+
+            if (userFound.length == 0) return res.status(400).send({
+                message: 'Could not update: user not found'
+            });
+
+            // if needed, hash new password and update user
+            if (user.password) {
+                const hash = await bcrypt.hash(user.password, 10);
+                user.password = hash;
+            }
 
             await User.query()
                 .patch({
-                    name: name,
-                    email: email,
-                    password: hash,
+                    name: user.name,
+                    email: user.email,
+                    password: user.password,
                 })
                 .where('id', '=', req.params.id);
 
@@ -82,6 +124,15 @@ class UserController {
 
     async deleteUser(req, res) {
         try {
+            // check if user exists
+            const userFound = await User.query()
+                .where('id', '=', req.params.id);
+
+            if (userFound.length == 0) return res.status(404).send({
+                message: 'Could not delete: user not found'
+            });
+
+            //deletes if found user
             await User.query()
                 .delete()
                 .where('id', '=', req.params.id)
