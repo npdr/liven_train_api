@@ -42,11 +42,46 @@ const updateUserSchema = Joi.object({
 });
 
 const addressSchema = Joi.object({
+    state: Joi.string()
+        .case('upper')
+        .min(2)
+        .max(2)
+        .required(),
+    city: Joi.string()
+        .max(30)
+        .required(),
+    street: Joi.string()
+        .max(50)
+        .required(),
+    number: Joi.number()
+        .integer()
+        .required(),
+    value: Joi.number()
+        .integer()
+        .required(),
+    ownerId: Joi.number()
+        .integer()
+        .required(),
+});
 
+const updateAddressSchema = Joi.object({
+    state: Joi.string()
+        .case('upper')
+        .min(2)
+        .max(2),
+    city: Joi.string()
+        .max(30),
+    street: Joi.string()
+        .max(50),
+    number: Joi.number()
+        .integer(),
+    value: Joi.number()
+        .integer(),
 });
 
 module.exports = {
     userSchema,
     addressSchema,
     updateUserSchema,
+    updateAddressSchema
 };

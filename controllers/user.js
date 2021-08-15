@@ -13,7 +13,7 @@ class UserController {
                 .select('name', 'email')
                 .findById(req.params.id);
 
-            if (!user) res.status(404).send({
+            if (!user) return res.status(404).send({
                 message: 'User not found'
             });
 
@@ -30,10 +30,6 @@ class UserController {
                 .select('name', 'email')
                 .withGraphFetched('address')
                 .where('name', '=', req.query.name);
-
-            if (user.length == 0) return res.status(404).send({
-                message: 'No users were found'
-            });
 
             return res.status(200).json(user);
         } catch (err) {
@@ -57,9 +53,11 @@ class UserController {
 
             // check if user exists
             const userFound = await User.query()
-                .where('email', '=', user.email);
-
-            if (userFound.length > 0) return res.status(400).send({
+                .findOne({
+                    email: user.email
+                });
+            
+            if (userFound) return res.status(400).send({
                 message: 'User already exists'
             });
 
@@ -94,9 +92,9 @@ class UserController {
 
             // check if user exists
             const userFound = await User.query()
-                .where('id', '=', req.params.id);
+                .findById(req.params.id);
 
-            if (userFound.length == 0) return res.status(400).send({
+            if (!userFound) return res.status(404).send({
                 message: 'Could not update: user not found'
             });
 
@@ -114,7 +112,7 @@ class UserController {
                 })
                 .where('id', '=', req.params.id);
 
-            return res.status(201).send({
+            return res.status(200).send({
                 message: 'User updated successfully'
             });
         } catch (err) {
@@ -124,20 +122,16 @@ class UserController {
 
     async deleteUser(req, res) {
         try {
-            // check if user exists
-            const userFound = await User.query()
-                .where('id', '=', req.params.id);
+            //deletes if found user
+            const userDeleted = await User.query()
+                .delete()
+                .findById(req.params.id);
 
-            if (userFound.length == 0) return res.status(404).send({
+            if (!userDeleted) return res.status(404).send({
                 message: 'Could not delete: user not found'
             });
 
-            //deletes if found user
-            await User.query()
-                .delete()
-                .where('id', '=', req.params.id)
-
-            return res.status(201).send({
+            return res.status(200).send({
                 message: 'User deleted successfully'
             });
         } catch (err) {
