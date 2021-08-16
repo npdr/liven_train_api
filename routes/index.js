@@ -9,12 +9,11 @@ const addressController = new AddressController();
 router.post('/user', userController.createUser);
 router.post('/user/address', addressController.createAddress);
 
-router.get('/user/address', addressController.getAddressByState);
+router.get('/user/address', addressController.getAddressByField);
 router.get('/user/:id', userController.getUserById);
-router.get('/user', userController.getUserByName);
+router.get('/user', userController.getUserByField);
 router.get('/user/address/:id', addressController.getAddressById);
-router.get('/address/:id', addressController.getAddressByUserId);
-router.get('/address', addressController.getAddressInRange);
+router.get('/address', addressController.getAddressByFieldInRange);
 
 router.put('/user/:id', userController.updateUser);
 router.put('/user/address/:id', addressController.updateAddress);

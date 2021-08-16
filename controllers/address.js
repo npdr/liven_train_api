@@ -22,18 +22,12 @@ class AddressController {
         }
     }
 
-    async getAddressByUserId(req, res) {
+    async getAddressByFieldInRange(req, res) {
         try {
-            const user = await User.query()
-                .findById(req.params.id);
-
-            if (!user) return res.status(404).send({
-                message: 'User not found'
-            });
-
             const address = await Address.query()
                 .select('state', 'city', 'street', 'number', 'value')
-                .where('ownerId', '=', req.params.id);
+                .where(req.query.field, '>=', req.query.min)
+                .where(req.query.field, '<=', req.query.max);
 
             return res.status(200).send(address);
         } catch (err) {
@@ -41,25 +35,12 @@ class AddressController {
         }
     }
 
-    async getAddressInRange(req, res) {
+    async getAddressByField(req, res) {
         try {
+            const field = Object.keys(req.query)[0];
             const address = await Address.query()
                 .select('state', 'city', 'street', 'number', 'value')
-                .where('value', '>=', req.query.min)
-                .where('value', '<=', req.query.max);
-
-            return res.status(200).send(address);
-        } catch (err) {
-            res.status(400).send(err);
-        }
-    }
-
-    async getAddressByState(req, res) {
-        try {
-            const address = await Address.query()
-                .select('state', 'city', 'street', 'number', 'value')
-                .where('state', '=', req.query.state)
-
+                .where(field, '=', req.query[field]);
             return res.status(200).send(address);
         } catch (err) {
             res.status(400).send(err);

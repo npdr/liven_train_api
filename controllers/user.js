@@ -24,12 +24,13 @@ class UserController {
 
     }
 
-    async getUserByName(req, res) {
+    async getUserByField(req, res) {
         try {
+            const field = Object.keys(req.query)[0];
             const user = await User.query()
                 .select('name', 'email')
                 .withGraphFetched('address')
-                .where('name', '=', req.query.name);
+                .where(field, '=', req.query[field]);
 
             return res.status(200).json(user);
         } catch (err) {
