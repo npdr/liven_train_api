@@ -13,7 +13,6 @@ router.get('/user/address', addressController.getAddressByField);
 router.get('/user/:id', userController.getUserById);
 router.get('/user', userController.getUserByField);
 router.get('/user/address/:id', addressController.getAddressById);
-router.get('/address', addressController.getAddressByFieldInRange);
 
 router.put('/user/:id', userController.updateUser);
 router.put('/user/address/:id', addressController.updateAddress);

@@ -37,11 +37,22 @@ class AddressController {
 
     async getAddressByField(req, res) {
         try {
-            const field = Object.keys(req.query)[0];
-            const address = await Address.query()
-                .select('state', 'city', 'street', 'number', 'value')
-                .where(field, '=', req.query[field]);
-            return res.status(200).send(address);
+            const qry = Object.keys(req.query);
+            if (qry.length > 1) {
+                const address = await Address.query()
+                    .select('state', 'city', 'street', 'number', 'value')
+                    .where(req.query.field, '>=', req.query.min)
+                    .where(req.query.field, '<=', req.query.max);
+
+                return res.status(200).send(address);
+            } else {
+                const field = qry[0];
+                const address = await Address.query()
+                    .select('state', 'city', 'street', 'number', 'value')
+                    .where(field, '=', req.query[field]);
+                return res.status(200).send(address);
+            }
+
         } catch (err) {
             res.status(500).send(err);
         }
