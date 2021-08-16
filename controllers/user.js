@@ -19,9 +19,8 @@ class UserController {
 
             return res.status(200).json(user);
         } catch (err) {
-            return res.send(400).send(err);
+            return res.send(500).send(err);
         }
-
     }
 
     async getUserByField(req, res) {
@@ -34,9 +33,8 @@ class UserController {
 
             return res.status(200).json(user);
         } catch (err) {
-            return res.status(400).send(err);
+            return res.status(500).send(err);
         }
-
     }
 
     async createUser(req, res) {
@@ -57,7 +55,7 @@ class UserController {
                 .findOne({
                     email: user.email
                 });
-            
+
             if (userFound) return res.status(400).send({
                 message: 'User already exists'
             });
@@ -74,7 +72,7 @@ class UserController {
                 user: user
             });
         } catch (err) {
-            return res.status(400).send(err);
+            return res.status(500).send(err);
         }
     }
 
@@ -117,7 +115,7 @@ class UserController {
                 message: 'User updated successfully'
             });
         } catch (err) {
-            res.status(400).send(err);
+            res.status(500).send(err);
         }
     }
 
@@ -136,7 +134,7 @@ class UserController {
                 message: 'User deleted successfully'
             });
         } catch (err) {
-            res.status(400).send(err);
+            res.status(500).send(err);
         }
     }
 }

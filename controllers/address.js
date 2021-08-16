@@ -18,7 +18,7 @@ class AddressController {
 
             return res.status(200).json(address);
         } catch (err) {
-            res.status(400).send(err);
+            res.status(500).send(err);
         }
     }
 
@@ -31,7 +31,7 @@ class AddressController {
 
             return res.status(200).send(address);
         } catch (err) {
-            res.status(400).send(err);
+            res.status(500).send(err);
         }
     }
 
@@ -43,7 +43,7 @@ class AddressController {
                 .where(field, '=', req.query[field]);
             return res.status(200).send(address);
         } catch (err) {
-            res.status(400).send(err);
+            res.status(500).send(err);
         }
     }
 
@@ -75,7 +75,7 @@ class AddressController {
                 message: 'Address created succesfully',
             });
         } catch (err) {
-            res.status(400).send(err);
+            res.status(500).send(err);
         }
     }
 
@@ -104,7 +104,7 @@ class AddressController {
                 message: 'Address updated successfully'
             });
         } catch (err) {
-            res.status(400).send(err);
+            res.status(500).send(err);
         }
     }
 
@@ -122,7 +122,7 @@ class AddressController {
                 message: 'Address deleted successfully'
             });
         } catch (err) {
-            res.status(400).send(err);
+            res.status(500).send(err);
         }
     }
 }
