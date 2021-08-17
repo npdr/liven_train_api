@@ -24,11 +24,15 @@ class AddressController {
 
     async getAddressByField(req, res) {
         try {
-            const field = Object.keys(req.query)[0];
-            const address = await Address.query()
+            const fields = Object.keys(req.query);
+            let qry = Address.query()
                 .select('state', 'city', 'street', 'number', 'value')
-                .where(field, '=', req.query[field]);
 
+            fields.map(field => {
+                qry.where(field, '=', req.query[field]);
+            });
+
+            const address = await qry;
             return res.status(200).send(address);
         } catch (err) {
             res.status(500).send(err);

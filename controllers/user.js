@@ -19,21 +19,25 @@ class UserController {
 
             return res.status(200).json(user);
         } catch (err) {
-            return res.send(500).send(err);
+            res.status(500).send(err);
         }
     }
 
     async getUserByField(req, res) {
         try {
-            const field = Object.keys(req.query)[0];
-            const user = await User.query()
+            const fields = Object.keys(req.query);
+            let qry = User.query()
                 .select('name', 'email')
                 .withGraphFetched('address')
-                .where(field, '=', req.query[field]);
 
-            return res.status(200).json(user);
+            fields.map(field => {
+                qry.where(field, '=', req.query[field]);
+            });
+
+            const user = await qry;
+            return res.status(200).send(user);
         } catch (err) {
-            return res.status(500).send(err);
+            res.status(500).send(err);
         }
     }
 
@@ -69,7 +73,6 @@ class UserController {
 
             return res.status(201).send({
                 message: 'User succesfully created',
-                user: user
             });
         } catch (err) {
             return res.status(500).send(err);
